@@ -14,9 +14,9 @@ void setup ()
     
     //your code to initialize buttons goes here
     
-     buttons = new MSButton[5][5];
-  for (int r = 0; r < 5; r++)
-    for (int c = 0; c < 5; c++)
+     buttons = new MSButton[25][25];
+  for (int r = 0; r < 25; r++)
+    for (int c = 0; c < 25; c++)
       buttons[r][c] = new MSButton(r, c);
 
     
@@ -24,15 +24,16 @@ void setup ()
 }
 public void setMines()
 {
-  for(int i=0;i<5;i++){
-    int randrow=(int)(Math.random()*5);
-    int randcol=(int)(Math.random()*5);
-     if(mines.contains(buttons[randrow][randcol])){
-      i-=2;
-}else{
- mines.add(new MSButton(randrow,randcol)); 
+  for(int i=0;i<45;i++){
+    int randrow=(int)(Math.random()*25);
+    int randcol=(int)(Math.random()*25);
+      if(!mines.contains(buttons[randrow][randcol]))
+        {
+            //System.out.println(ranR+", " + ranC);
+            mines.add(buttons[randrow][randcol]);
+        }
 }
-  }
+  
 }
 public void draw ()
 {
@@ -47,26 +48,19 @@ public boolean isWon()
 }
 public void displayLosingMessage()
 {
-    //your code here
+  
+  background( 155 );
+  textSize(150);
+ 
+    text("loser",200,200);
+   noLoop();
+  
 }
 public void displayWinningMessage()
 {
-    //your code here
-}
-public boolean isValid(int r, int c)
-{
-     if (r>=0 && r<5 && c>=0 && c<5)
-      return true;
-    else
-      return false;
-  
-}
-public int countMines(int row, int col)
-{
-    int numMines = 0;
-   
-    return numMines;
-}
+              buttons[NUM_ROWS/2][(NUM_COLS/2)-2].setLabel("YOU");
+                buttons[NUM_ROWS/2][(NUM_COLS/2)].setLabel("WIN!");}
+
 public class MSButton
 {
     private int myRow, myCol;
@@ -90,8 +84,41 @@ public class MSButton
     // called by manager
     public void mousePressed () 
     {
-        clicked = true;
-        //your code here
+        
+        if(mouseButton==RIGHT){
+         if(flagged){
+         flagged = false;
+         }
+         else
+         flagged = true;
+        }else if(mouseButton==LEFT) {
+          clicked = true;
+          if(mines.contains(this)){
+          displayLosingMessage();
+        }else if(countMines(myRow,myCol)>0){
+            setLabel(countMines(myRow,myCol));
+         
+          }     else
+        {
+            if(isValid(myRow,myCol-1) && !buttons[myRow][myCol-1].isClicked())
+                buttons[myRow][myCol-1].mousePressed();
+            if(isValid(myRow,myCol+1) && !buttons[myRow][myCol+1].isClicked())
+                buttons[myRow][myCol+1].mousePressed();
+            if(isValid(myRow-1,myCol) && !buttons[myRow-1][myCol].isClicked())
+                buttons[myRow-1][myCol].mousePressed();
+            if(isValid(myRow+1,myCol) && !buttons[myRow+1][myCol].isClicked())
+                buttons[myRow+1][myCol].mousePressed();
+            if(isValid(myRow+1,myCol-1) && !buttons[myRow+1][myCol-1].isClicked())
+                buttons[myRow+1][myCol-1].mousePressed();
+            if(isValid(myRow+1,myCol+1) && !buttons[myRow+1][myCol+1].isClicked())
+                buttons[myRow+1][myCol+1].mousePressed();
+            if(isValid(myRow-1,myCol+1) && !buttons[myRow-1][myCol+1].isClicked())
+                buttons[myRow-1][myCol+1].mousePressed();
+            if(isValid(myRow-1,myCol-1) && !buttons[myRow-1][myCol-1].isClicked())
+                buttons[myRow-1][myCol-1].mousePressed();
+        }
+        }
+        
     }
     public void draw () 
     {    
@@ -100,7 +127,7 @@ public class MSButton
         else if( clicked && mines.contains(this) ) 
             fill(255,0,0);
         else if(clicked)
-            fill( 200 );
+            fill( 200 ); 
         else 
             fill( 100 );
 
@@ -120,4 +147,50 @@ public class MSButton
     {
         return flagged;
     }
+        public boolean isClicked()
+    {
+        return clicked;
+    }
+    public boolean isValid(int r, int c)
+{
+     if (r>=0 && r<25 && c>=0 && c<25)
+      return true;
+    else
+      return false;
+  
+}
+public int countMines(int row, int col)
+{
+    int numMines = 0;
+    if(isValid(row,col+1)&& mines.contains(buttons[row][col+1])){
+      numMines++;
+    }
+        if(isValid(row,col-1)&& mines.contains(buttons[row][col-1])){
+      numMines++;
+    }
+        if(isValid(row+1,col+1)&& mines.contains(buttons[row+1][col+1])){
+      numMines++;
+    }
+        if(isValid(row-1,col+1)&& mines.contains(buttons[row-1][col+1])){
+      numMines++;
+    }
+        if(isValid(row+1,col-1)&& mines.contains(buttons[row+1][col-1])){
+      numMines++;
+    }
+        if(isValid(row-1,col-1)&& mines.contains(buttons[row-1][col-1])){
+      numMines++;
+    }
+        if(isValid(row+1,col)&& mines.contains(buttons[row+1][col])){
+      numMines++;
+    }
+        if(isValid(row-1,col)&& mines.contains(buttons[row-1][col])){
+      numMines++;
+    }
+
+    
+  
+
+
+    return numMines;
+}
 }
